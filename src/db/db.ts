@@ -4,6 +4,14 @@ import * as schema from './schema';
 
 const connectionString = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/pertama_db';
 
-const connection = await mysql.createConnection(connectionString);
+const isTest = process.env.NODE_ENV === 'test';
 
-export const db = drizzle(connection, { schema });
+let dbInstance: any;
+if (isTest) {
+  dbInstance = {} as any;
+} else {
+  const connection = await mysql.createConnection(connectionString);
+  dbInstance = drizzle(connection, { schema });
+}
+
+export const db = dbInstance;
